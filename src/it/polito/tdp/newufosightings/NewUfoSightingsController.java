@@ -5,9 +5,12 @@
 package it.polito.tdp.newufosightings;
 
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.newufosightings.model.Model;
+import it.polito.tdp.newufosightings.model.VerticeSommaPeso;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -51,12 +54,37 @@ public class NewUfoSightingsController {
 
 	@FXML
 	void doCreaGrafo(ActionEvent event) {
-
+		String shape = cmbBoxForma.getValue();
+		if(shape == null) {
+			txtResult.appendText("Si deve selezionare una forma dal menu\n");
+		}
+		Integer anno = Integer.parseInt(txtAnno.getText());
+		this.model.creaGrafo(anno, shape);
+		txtResult.clear();
+		txtResult.appendText(String.format("Grafo creato di %d vertici con %d archi\n", this.model.getVertici(), this.model.getArchi()));
+		
+		List<VerticeSommaPeso> vicini = new LinkedList<>();
+		vicini = this.model.getVicini();
+		for(VerticeSommaPeso tmp: vicini) {
+			txtResult.appendText(String.format("Vertice %s con somma dei pesi = %d\n", tmp.getVertice(), tmp.getSommaPeso()));
+		}
+		
 	}
 
 	@FXML
 	void doSelezionaAnno(ActionEvent event) {
-
+		try {
+			
+			Integer anno = Integer.parseInt(txtAnno.getText());
+			if(anno<1910 || anno>2014) {
+				txtResult.appendText("Inserire un anno compreso tra il 1910 e il 2014\\n");
+			}
+			cmbBoxForma.getItems().clear();
+			cmbBoxForma.getItems().addAll(this.model.getShape());
+			
+		}catch(NumberFormatException e) {
+			txtResult.appendText("Inserire un anno compreso tra il 1910 e il 2014\n");
+		}
 	}
 
 	@FXML
